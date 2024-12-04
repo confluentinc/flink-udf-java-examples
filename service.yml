@@ -1,0 +1,7 @@
+name: flink-udf-java-examples
+lang: unknown
+lang_version: unknown
+git:
+  enable: true
+codeowners:
+  enable: true

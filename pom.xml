@@ -19,6 +19,7 @@
         <junit.version>5.9.1</junit.version>
         <assertj.version>3.23.1</assertj.version>
         <spotless.version>2.35.0</spotless.version>
+        <log4j.version>2.20.0</log4j.version>
     </properties>
 
     <modules>
@@ -47,6 +48,13 @@
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- User Logging Dependency -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
 
 

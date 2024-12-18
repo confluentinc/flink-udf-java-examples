@@ -1,7 +1,3 @@
-/*
- * Copyright 2024 Confluent Inc.
- */
-
 package io.confluent.udf.examples.scalar;
 
 import org.apache.flink.table.functions.ScalarFunction;

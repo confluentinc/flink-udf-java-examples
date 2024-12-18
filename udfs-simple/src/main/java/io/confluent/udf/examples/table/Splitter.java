@@ -1,7 +1,3 @@
-/*
- * Copyright 2024 Confluent Inc.
- */
-
 package io.confluent.udf.examples.table;
 
 import org.apache.flink.table.annotation.DataTypeHint;

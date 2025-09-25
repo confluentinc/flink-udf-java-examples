@@ -18,7 +18,7 @@
         <flink.table.api.version>1.20.2</flink.table.api.version>
         <junit.version>5.13.4</junit.version>
         <assertj.version>3.27.6</assertj.version>
-        <spotless.version>2.46.1</spotless.version>
+        <spotless.version>3.0.0</spotless.version>
         <log4j.version>2.25.2</log4j.version>
     </properties>
 

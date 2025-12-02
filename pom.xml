@@ -55,6 +55,7 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j.version}</version>
+                <scope>provided</scope>
             </dependency>
 
 
@@ -74,7 +75,7 @@
                 <configuration>
                     <java>
                         <googleJavaFormat>
-                            <version>1.7</version>
+                            <version>1.8</version>
                             <style>AOSP</style>
                         </googleJavaFormat>
 

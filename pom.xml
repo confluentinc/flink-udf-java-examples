@@ -25,6 +25,7 @@
     <modules>
         <module>udfs-simple</module>
         <module>udfs-with-dependencies</module>
+        <module>udfs-with-external-connection</module>
     </modules>
 
     <dependencyManagement>

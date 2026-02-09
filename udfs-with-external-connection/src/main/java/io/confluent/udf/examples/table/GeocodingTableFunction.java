@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.flink.table.annotation.DataTypeHint;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.flink.table.annotation.FunctionHint;
 import org.apache.flink.table.functions.FunctionContext;
 import org.apache.flink.table.functions.TableFunction;
@@ -64,6 +67,8 @@ import java.time.Duration;
  */
 @FunctionHint(output = @DataTypeHint("ROW<lat DOUBLE, lon DOUBLE, display_name STRING>"))
 public class GeocodingTableFunction extends TableFunction<Row> {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private transient String functionUrl = null;
     private transient HttpClient httpClient = null;
     private transient ObjectMapper objectMapper = null;
@@ -100,36 +105,41 @@ public class GeocodingTableFunction extends TableFunction<Row> {
         String encodedQuery = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
         String requestUrl = functionUrl + "?q=" + encodedQuery + "&format=json&limit=5";
 
-        HttpRequest request =
-                HttpRequest.newBuilder()
-                        .uri(URI.create(requestUrl))
-                        .GET()
-                        .timeout(Duration.ofSeconds(30))
-                        .header("Accept", "application/json")
-                        .header("User-Agent", "FlinkUDF/1.0")
-                        .build();
+        try {
+            HttpRequest request =
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(requestUrl))
+                            .GET()
+                            .timeout(Duration.ofSeconds(30))
+                            .header("Accept", "application/json")
+                            .header("User-Agent", "FlinkUDF/1.0")
+                            .build();
 
-        HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) {
-            throw new IOException(
-                    "HTTP request failed with status code: "
-                            + response.statusCode()
-                            + ", response: "
-                            + response.body());
-        }
-
-        JsonNode results = objectMapper.readTree(response.body());
-
-        if (results.isArray()) {
-            for (JsonNode location : results) {
-                double lat = location.path("lat").asDouble();
-                double lon = location.path("lon").asDouble();
-                String displayName = location.path("display_name").asText();
-
-                collect(Row.of(lat, lon, displayName));
+            if (response.statusCode() != 200) {
+                throw new IOException(
+                        "HTTP request failed with status code: "
+                                + response.statusCode()
+                                + ", response: "
+                                + response.body());
             }
+
+            JsonNode results = objectMapper.readTree(response.body());
+
+            if (results.isArray()) {
+                for (JsonNode location : results) {
+                    double lat = location.path("lat").asDouble();
+                    double lon = location.path("lon").asDouble();
+                    String displayName = location.path("display_name").asText();
+
+                    collect(Row.of(lat, lon, displayName));
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error("Failed to geocode location '{}': {}", locationName, e.getMessage(), e);
+            throw e;
         }
     }
 

@@ -20,6 +20,10 @@ package io.confluent.udf.examples.scalar;
 
 import org.apache.flink.table.functions.FunctionContext;
 import org.apache.flink.table.functions.ScalarFunction;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -58,6 +62,8 @@ import java.time.Duration;
  * </pre>
  */
 public class WeatherForecastFunction extends ScalarFunction {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private transient String functionUrl = null;
     private transient HttpClient httpClient = null;
     private transient String connectionName = null;
@@ -105,26 +111,32 @@ public class WeatherForecastFunction extends ScalarFunction {
                 arrivalDate,
                 arrivalDate);
 
-        HttpRequest request =
-                HttpRequest.newBuilder()
-                        .uri(URI.create(requestUrl))
-                        .GET()
-                        .timeout(Duration.ofSeconds(30))
-                        .header("Accept", "application/json")
-                        .build();
+        try {
+            HttpRequest request =
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(requestUrl))
+                            .GET()
+                            .timeout(Duration.ofSeconds(30))
+                            .header("Accept", "application/json")
+                            .build();
 
-        HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) {
-            throw new IOException(
-                    "HTTP request failed with status code: "
-                            + response.statusCode()
-                            + ", response: "
-                            + response.body());
+            if (response.statusCode() != 200) {
+                throw new IOException(
+                        "HTTP request failed with status code: "
+                                + response.statusCode()
+                                + ", response: "
+                                + response.body());
+            }
+
+            return response.body();
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error("Failed to fetch weather forecast for lat={}, lon={}, date={}: {}",
+                    latitude, longitude, arrivalDate, e.getMessage(), e);
+            throw e;
         }
-
-        return response.body();
     }
 
     @Override

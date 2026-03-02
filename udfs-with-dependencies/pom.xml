@@ -72,9 +72,26 @@
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
+                                <!-- Exclude module-info to avoid breaking JPMS strong encapsulation. -->
+                                <exclude>module-info.class</exclude>
+                                <exclude>META-INF/versions/*/module-info.class</exclude>
+                                <!-- Exclude per-jar manifests; the shade plugin generates its own. -->
+                                <exclude>META-INF/MANIFEST.MF</exclude>
                             </excludes>
                         </filter>
                     </filters>
+                    <transformers>
+                        <!-- Generate a fresh META-INF/MANIFEST.MF for the shaded JAR. -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer" />
+                        <!-- Merge META-INF/LICENSE files to avoid overwrite warnings. -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
+                        <!-- Merge META-INF/NOTICE files. -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                            <addHeader>false</addHeader>
+                        </transformer>
+                        <!-- Merge META-INF/services/ files (e.g. Jackson ObjectCodec SPI entries). -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                    </transformers>
                 </configuration>
                 <executions>
                     <execution>

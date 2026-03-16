@@ -20,6 +20,7 @@
         <assertj.version>3.27.7</assertj.version>
         <spotless.version>2.46.1</spotless.version>
         <log4j.version>2.25.3</log4j.version>
+        <commons.lang3.version>3.12.0</commons.lang3.version>
     </properties>
 
     <modules>
@@ -56,6 +57,14 @@
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <!-- Add commons lang version compatible with Flink Table API. Higher versions may lead to runtime
+            issues -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang3.version}</version>
             </dependency>
 
 
@@ -109,7 +118,11 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyConvergence />
+                                <dependencyConvergence>
+                                    <excludedScopes>
+                                        <scope>test</scope>
+                                    </excludedScopes>
+                                </dependencyConvergence>
                             </rules>
                             <fail>true</fail>
                         </configuration>

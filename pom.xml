@@ -19,7 +19,7 @@
         <junit.version>5.14.3</junit.version>
         <assertj.version>3.27.7</assertj.version>
         <spotless.version>2.46.1</spotless.version>
-        <log4j.version>2.25.3</log4j.version>
+        <log4j.version>2.25.4</log4j.version>
         <commons.lang3.version>3.18.0</commons.lang3.version>
     </properties>
 

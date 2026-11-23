@@ -38,6 +38,13 @@
             <version>2.23.0</version>
         </dependency>
 
+        <!-- Bounded on-heap cache used by CachedWeatherForecastFunction -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -74,6 +81,13 @@
                             </excludes>
                         </filter>
                     </filters>
+                    <relocations>
+                        <!-- Relocate Caffeine so it can't clash with a copy on the runtime classpath -->
+                        <relocation>
+                            <pattern>com.github.benmanes.caffeine</pattern>
+                            <shadedPattern>io.confluent.udf.examples.shaded.caffeine</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
